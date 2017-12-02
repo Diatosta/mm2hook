@@ -70,7 +70,7 @@ namespace MM2 {
         IDirectPlayLobby3 *plobby;
         GUID GUID;
         void *pZoneScore; // unused, never initialized
-    };
+    }; 
 
     class asNetwork {
     public:
@@ -97,20 +97,20 @@ namespace MM2 {
         AGE_API asNetwork(void)                             { ageHook::Thunk<0x56FCD0>::Call<void>(this); }
         AGE_API ~asNetwork(void)                            { ageHook::Thunk<0x56FD70>::Call<void>(this); }
 
-        AGE_API int Initialize(int a2, int a3, int a4)      { return ageHook::Thunk<0x56FDC0>::Call<int>(this, a2, a3, a4); }
-        AGE_API int InitializeLobby(int a2, int a3)         { return ageHook::Thunk<0x56FE20>::Call<int>(this, a2, a3); }
-        AGE_API void WaitForLobbyConnection(int a2)         { return ageHook::Thunk<0x56FE90>::Call<void>(this, a2); }
-        AGE_API int JoinLobbySession(void)                  { return ageHook::Thunk<0x56FEF0>::Call<int>(this); }
+        //AGE_API int Initialize(int maxPlayers, int a3, int version)      { return ageHook::Thunk<0x56FDC0>::Call<int>(this, maxPlayers, a3, version); }
+        //AGE_API int InitializeLobby(int maxPlayers, int a3)         { return ageHook::Thunk<0x56FE20>::Call<int>(this, maxPlayers, a3); }
+        //AGE_API void WaitForLobbyConnection(int a2)         { return ageHook::Thunk<0x56FE90>::Call<void>(this, a2); }
+        //AGE_API int JoinLobbySession(void)                  { return ageHook::Thunk<0x56FEF0>::Call<int>(this); }
         AGE_API void SendLobbyProperty(void *a2, int a3)    { return ageHook::Thunk<0x5700E0>::Call<void>(this, a2, a3); }
-        AGE_API void Logout(void)                           { return ageHook::Thunk<0x5701C0>::Call<void>(this); }
-        AGE_API void Deallocate(void)                       { return ageHook::Thunk<0x5702C0>::Call<void>(this); }
-        AGE_API int CreateInterface(void)                   { return ageHook::Thunk<0x570300>::Call<int>(this); }
-        AGE_API int GetNetworkCaps(void)                    { return ageHook::Thunk<0x570320>::Call<int>(this); }
+        //AGE_API void Logout(void)                           { return ageHook::Thunk<0x5701C0>::Call<void>(this); }
+        //AGE_API void Deallocate(void)                       { return ageHook::Thunk<0x5702C0>::Call<void>(this); }
+        //AGE_API int CreateInterface(void)                   { return ageHook::Thunk<0x570300>::Call<int>(this); }
+        //AGE_API int GetNetworkCaps(void)                    { return ageHook::Thunk<0x570320>::Call<int>(this); }
         AGE_API void GetProtocols(void)                     { return ageHook::Thunk<0x5703D0>::Call<void>(this); }
         AGE_API int SetProtocol(int a2, struct NETCOMMPACK *a3)
                                                             { return ageHook::Thunk<0x570400>::Call<int>(this, a2, a3); }
         AGE_API int SetProtocol(int a2)                     { return ageHook::Thunk<0x570760>::Call<int>(this, a2); }
-        AGE_API void Disconnect(void)                       { return ageHook::Thunk<0x570870>::Call<void>(this); }
+        //AGE_API void Disconnect(void)                       { return ageHook::Thunk<0x570870>::Call<void>(this); }
         AGE_API char * GetEnumProtocol(int a2)              { return ageHook::Thunk<0x5708C0>::Call<char *>(this, a2); }
         AGE_API int GetEnumProtocols(void)                  { return ageHook::Thunk<0x5708F0>::Call<int>(this); }
         AGE_API signed int CreatePlayer(WCHAR *a2, LPVOID lpData, DWORD dwDataSize)
@@ -120,7 +120,7 @@ namespace MM2 {
         AGE_API int GetPlayers(LPGUID lpguidInstance)       { return ageHook::Thunk<0x570A30>::Call<int>(this, lpguidInstance); }
         AGE_API char * GetEnumPlayer(int a2)                { return ageHook::Thunk<0x570A60>::Call<char *>(this, a2); }
         AGE_API ulong GetPlayerID(int a2)                   { return ageHook::Thunk<0x570A90>::Call<ulong>(this, a2); }
-        AGE_API int GetNumPlayers(void)                     { return ageHook::Thunk<0x570AD0>::Call<int>(this); }
+        //AGE_API int GetNumPlayers(void)                     { return ageHook::Thunk<0x570AD0>::Call<int>(this); }
         AGE_API int GetPlayerName(DPID idPlayer)            { return ageHook::Thunk<0x570B90>::Call<int>(this, idPlayer); }
         AGE_API int GetPlayerName(DPID idPlayer, char *a3)  { return ageHook::Thunk<0x570C60>::Call<int>(this, idPlayer, a3); }
         AGE_API void SetPlayerData(DPID idPlayer, void *lpData, DWORD dwDataSize)
@@ -171,9 +171,25 @@ namespace MM2 {
         AGE_API int GetNumModems(void)                      { return ageHook::Thunk<0x5727B0>::Call<int>(this); }
         AGE_API char * GetEnumModem(int a2)                 { return ageHook::Thunk<0x5727C0>::Call<char *>(this, a2); }
         AGE_API int QueryModems(void)                       { return ageHook::Thunk<0x5727F0>::Call<int>(this); }
+
+        int Initialize(int, int, int);
+        int InitializeLobby(int, int);
+        void WaitForLobbyConnection(int);
+        int JoinLobbySession(void);
+        void Logout(void);
+        void Deallocate(void);
+        int CreateInterface(void);
+        int GetNetworkCaps(void);
+        void Disconnect(void);
+        int GetNumPlayers(void);
+
+        static void Install(void);
     };
 
     declhook(0x6B3968, _TypeProxy<asNetwork>, NETMGR);
+    declhook(0x5B5C88, _Type<GUID>, MM2_GUID);
+    declhook(0x6B39E0, _Type<char *>, SEND_BUFFER);
+    declhook(0x6B41F4, _Type<int>, dword_6B41F4);
 
     template<>
     void luaAddModule<module_network>(LuaState L) {

@@ -361,6 +361,8 @@ public:
     static void Update(void) {
         MM2Lua::OnTick();
 
+        Discord_RunCallbacks();
+
         // pass control back to MM2
         datTimeManager::Update();
     }
@@ -496,6 +498,7 @@ private:
             Order doesn't really matter, just whatever looks neat
         */
 
+        InstallHandler<asNetwork>("asNetwork");
         InstallHandler<aiPathHandler>("aiPath");
         InstallHandler<aiPedestrianHandler>("aiPedestrian");
 
