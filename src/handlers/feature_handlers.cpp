@@ -21,6 +21,8 @@ static init_handler g_feature_handlers[] = {
         Order doesn't really matter, just whatever looks neat
     */
 
+	CreateHandler<vehTransmissionHandler>("vehTransmission"),
+
     CreateHandler<asCullManagerHandler>("asCullManager"),
 
     CreateHandler<cityLevelHandler>("cityLevel"),
@@ -77,6 +79,60 @@ ageHook::Type<float> sdl_LowThresh          ( 0x5C570C );  // default: 100.0
 ageHook::Type<float> sdl_MedThresh          ( 0x5C5710 );  // default: 50.0
 
 ageHook::Type<int> timeOfDay                ( 0x62B068 );
+
+/*
+	vehTransmissionHandler
+*/
+
+void vehTransmissionHandler::Install() {
+	/*InstallVTableHook("vehTransmission::Reset",
+		&vehTransmission::Reset, {
+			0x5B2D38,
+		}
+	);
+
+	InstallCallback("vehTransmission::Reset", "Resets the car's transmission.",
+		&vehTransmission::Reset, {
+			cbHook<CALL>(0x4CF1E9),
+		}
+	);*/
+
+	InstallCallback("vehTransmission::Init", "Inits the car's transmission.",
+		&vehTransmission::Init, {
+			cbHook<CALL>(0x4CBD08),
+		}
+	);
+
+	InstallCallback("vehTransmission::Upshift", "Upshifts the car's transmission.",
+		&vehTransmission::Upshift, {
+			cbHook<JMP>(0x4CF570),
+		}
+	);
+
+	InstallCallback("vehTransmission::Downshift", "Downshifts the car's transmission.",
+		&vehTransmission::Downshift, {
+			cbHook<JMP>(0x4CF5B0),
+		}
+	);
+
+	InstallCallback("vehTransmission::Automatic", "Sets the car's transmission type.",
+		&vehTransmission::Automatic, {
+			cbHook<JMP>(0x4CF6B0),
+		}
+	);
+
+	InstallCallback("vehTransmission::SetForward", "Sets the car's transmission to move forwards.",
+		&vehTransmission::SetForward, {
+			cbHook<JMP>(0x4CF6E0),
+		}
+	);
+
+	InstallCallback("vehTransmission::SetCurrentGear", "Sets the car's transmission gear.",
+		&vehTransmission::SetCurrentGear, {
+			cbHook<JMP>(0x4CF700),
+		}
+	);
+}
 
 /*
     asCullManagerHandler

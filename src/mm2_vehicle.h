@@ -5,12 +5,16 @@
 #include "mm2_game.h"
 #include "mm2_breakable.h"
 
+# define M_PI          3.141592653589793238462643383279502884L /* pi */
+
 namespace MM2
 {
     // Forward declarations
     class mmVehInfo;
     class mmVehList;
     class vehCar;
+	class vehTransmission;
+	class vehCarSim;
     class vehCarAudio;
     class vehCarAudioContainer;
     class vehPoliceCarAudio;
@@ -165,27 +169,233 @@ namespace MM2
 
     class vehTransmission : public asNode {
     protected:
+		ageHook::Field<0x18, vehCarSim *> _vehCarSim;
+		ageHook::Field<0x1C, int> _field1C;
+		ageHook::Field<0x20, BOOL> _automatic;
         ageHook::Field<0x24, int> _gear;
+		ageHook::Field<0x28, int> _field28;
+		ageHook::Field<0x54, int> _autoNumGears;
     public:
+		inline vehCarSim * getVehCarSim(void) {
+			return _vehCarSim.get(this);
+		}
+
+		inline void setVehCarSim(vehCarSim * vehCarSimToSet) {
+			_vehCarSim.set(this, vehCarSimToSet);
+		}
+		inline int getField1C(void) {
+			return _field1C.get(this);
+		}
+		inline void setField1C(int field1C) {
+			_field1C.set(this, field1C);
+		}
+		inline BOOL getAutomatic(void) {
+			return _automatic.get(this);
+		}
+		inline void setAutomatic(BOOL automatic) {
+			_automatic.set(this, automatic);
+		}
         inline int getGear(void) {
             return _gear.get(this);
         };
+		inline void setGear(int gear) {
+			_gear.set(this, gear);
+		}
+		inline void setField28(int field28) {
+			_field28.set(this, field28);
+		}
+		inline int getAutoNumGears(void) {
+			return _autoNumGears.get(this);
+		};
+		inline void setAutoNumGears(int autoNumGears) {
+			_autoNumGears.set(this, autoNumGears);
+		}
 
-        AGE_API void Upshift()                              { ageHook::Thunk<0x4CF570>::Call<void>(this); }
-        AGE_API void Downshift()                            { ageHook::Thunk<0x4CF5B0>::Call<void>(this); }
-        AGE_API void SetReverse()                           { ageHook::Thunk<0x4CF6C0>::Call<void>(this); }
-        AGE_API void SetNeutral()                           { ageHook::Thunk<0x4CF6D0>::Call<void>(this); }
-        AGE_API void SetForward()                           { ageHook::Thunk<0x4CF6E0>::Call<void>(this); }
-        AGE_API void SetCurrentGear(int a1)                 { ageHook::Thunk<0x4CF700>::Call<void>(this, a1); }
-        AGE_API void Automatic(BOOL a1)                     { ageHook::Thunk<0x4CF6B0>::Call<void>(this, a1); }
-        AGE_API float GearRatioFromMPH(float a1)            { return ageHook::Thunk<0x4CF530>::Call<float>(this, a1); }
+		//This is used in GearToRatioMPH, not sure what it stands for
+		const float rationToMPH = 26.82240;
+
+		int field0;
+		int field4;
+		int field8;
+		int fieldC;
+		int field10;
+		int field14;
+		//int field18;
+		//int field1C;
+		/*BOOL _automatic;
+		int _currentGear;*/
+		//int field28;
+		float _gearChangeTime;
+		int field30;
+		int field34;
+		int field38;
+		int field3C;
+		int field40;
+		int field44;
+		int field48;
+		int field4C;
+		int _manualNumGears;
+		//int _autoNumGears;
+		int field58;
+		int field5C;
+		int field60;
+		int field64;
+		int field68;
+		int field6C;
+		int field70;
+		int field74;
+		int field78;
+		int field7C;
+		int field80;
+		int field84;
+		int field88;
+		int field8C;
+		int field90;
+		int field94;
+		int field98;
+		int field9C;
+		int fieldA0;
+		int fieldA4;
+		int fieldA8;
+		int fieldAC;
+		int fieldB0;
+		int fieldB4;
+		int fieldB8;
+		int fieldBC;
+		int fieldC0;
+		int fieldC4;
+		int fieldC8;
+		int fieldCC;
+		int fieldD0;
+		int fieldD4;
+		float _reverse;
+		float _low;
+		float _high;
+		float _upshiftBias;
+		float _downshiftBiasMin;
+		float _downshiftBiasMax;
+		float _gearBias;
+
+		/*vehTransmission() {
+			int v2;
+
+			asNode::asNode();
+			this->field30 = -1054867456;
+			this->field58 = -1054867456;
+			v2 = 2;
+			this->field18 = 0;
+			this->field78 = 0;
+			this->field98 = 0;
+			this->fieldB8 = 0;
+			this->field34 = 0;
+			this->field5C = 0;
+			this->field7C = 0;
+			this->field9C = 0;
+			this->fieldBC = 0;
+			//this->field0 = this->vftable;
+		}*/
+
+		void Reset() {
+			asNode::Reset();
+			this->SetCurrentGear(2);
+			this->setField28(0);
+		}
+
+		void ComputeConstants(double a2) {
+			//Code
+		}
+
+		/*float GearRatioFromMPH(float a2) {
+			float temp = rationToMPH * a2;
+			float temp2 = *(getVehCarSim()->getField3FC() + 444);
+			LogFile::Format("temp2 = %f\n", temp2);
+			temp2 = temp2 * (M_PI * 2);
+			temp = temp / temp2;
+			float temp3 = getVehCarSim()->getField27E();
+			return temp3;
+		}*/
+
+		void Init(vehCarSim * vehCarSimToSet) {
+			this->setVehCarSim(vehCarSimToSet);
+		}
+
+		//Upshifts the car's transmission
+		void Upshift() {
+			int currentGear;
+
+			if (this->getAutomatic()) {
+				bool _automatic = this->getAutomatic() == 1;
+				currentGear = this->getGear();
+				if (currentGear < 2) {
+					this->SetCurrentGear(currentGear + 1);
+				}
+			}
+			else {
+				currentGear = this->getGear();
+				if (currentGear < (this->_manualNumGears) - 1) {
+					this->SetCurrentGear(currentGear + 1);
+				}
+			}
+		}
+
+		//Downshifts the car's transmission
+		void Downshift() {
+			int currentGear;
+
+			if (this->getAutomatic()) {
+				currentGear = this->getGear();
+				if (currentGear >= 2) {
+					this->SetCurrentGear(1);
+					return;
+				}
+				if (currentGear >= 1) {
+					this->SetCurrentGear(0);
+				}
+			}
+			else {
+				currentGear = this->getGear();
+
+				//Only downshift if we're above reverse
+				if (currentGear > 0) {
+					this->SetCurrentGear(currentGear - 1);
+				}
+			}
+		}
+
+		//Sets the transmission type
+		void Automatic(BOOL isAutomatic) {
+			this->setAutomatic(isAutomatic);
+		}
+
+		void SetReverse() {
+			this->SetCurrentGear(0);
+		}
+
+		void SetNeutral() {
+			this->SetCurrentGear(1);
+		}
+
+		void SetForward() {
+			int currentGear = this->getGear();
+
+			if (currentGear <= 1) {
+				this->SetCurrentGear(2);
+			}
+		}
+
+		void SetCurrentGear(int gearToSet) {
+			if (gearToSet != this->getGear() && (!this->getAutomatic() || gearToSet < this->getAutoNumGears())) {
+				this->setField28(0);
+				this->setField1C(1);
+				this->setGear(gearToSet);
+			}
+		}
 
         /*
             asNode virtuals
         */
 
         AGE_API void Update() override                      { ageHook::Thunk<0x4CF600>::Call<void>(this); }
-        AGE_API void Reset() override                       { ageHook::Thunk<0x4CF200>::Call<void>(this); }
         AGE_API void FileIO(datParser &parser)  override
                                                             { ageHook::Thunk<0x4CF740>::Call<void>(this); }
         AGE_API char* GetClassName() override               { return ageHook::Thunk<0x4CF880>::Call<char*>(this); }
@@ -200,11 +410,11 @@ namespace MM2
                 .addFunction("SetNeutral", &SetNeutral)
                 .addFunction("SetForward", &SetForward)
                 .addFunction("SetCurrentGear", &SetCurrentGear)
-                .addFunction("GearRatioFromMPH", &GearRatioFromMPH)
+                //.addFunction("GearRatioFromMPH", &GearRatioFromMPH)
                 .endClass();
         }
     private:
-        byte _buffer[0x4C];
+        //byte _buffer[0x4C];
     };
 
     class vehCarSim : public asNode {
@@ -214,6 +424,8 @@ namespace MM2
         ageHook::Field<0x1D0, lvlInstance *> _instance;
         ageHook::Field<0x2E0, vehTransmission> _transmission;
         //ageHook::Field<0x25C, vehEngine *> _engine;
+		ageHook::Field<0x27E, float> _field27E;
+		ageHook::Field<0x3FC, int *> _field3FC;
     public:
         inline float getSpeed(void) {
             return _speed.get(this);
@@ -230,6 +442,12 @@ namespace MM2
         inline vehTransmission* getTransmission(void) const {
             return _transmission.ptr(this);
         }
+		inline float getField27E(void) {
+			return _field27E.get(this);
+		}
+		inline int * getField3FC(void) {
+			return _field3FC.get(this);
+		}
 
         AGE_API vehCarSim()                                 { ageHook::Thunk<0x4CB660>::Call<void>(this); }
         AGE_API ~vehCarSim()                                { ageHook::Thunk<0x4CB8E0>::Call<void>(this); }

@@ -11,6 +11,11 @@ static ConfigValue<bool> cfgUseAllTrafficColors     ("UseAllTrafficColors",     
 static ConfigValue<bool> cfgAmbientSoundsWithMusic  ("AmbientSoundsWithMusic",  true);
 static ConfigValue<float> cfgFerrySpeedMultiplier   ("FerrySpeedMultiplier",    5.0f);
 
+class vehTransmissionHandler {
+public:
+	static void Install();
+};
+
 class asCullManagerHandler {
 public:
     void Init(int maxCullables, int maxCullables2D);
