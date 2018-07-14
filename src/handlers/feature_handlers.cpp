@@ -85,6 +85,12 @@ ageHook::Type<int> timeOfDay                ( 0x62B068 );
 */
 
 void vehTransmissionHandler::Install() {
+	InstallCallback("vehTransmission::vehTransmission", "Constructs the car's transmission.",
+		&vehTransmission::vehTransmission, {
+			cbHook<JMP>(0x4CF0F0),
+		}
+	);
+
 	/*InstallVTableHook("vehTransmission::Reset",
 		&vehTransmission::Reset, {
 			0x5B2D38,

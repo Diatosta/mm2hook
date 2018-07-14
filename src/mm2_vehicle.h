@@ -169,13 +169,70 @@ namespace MM2
 
     class vehTransmission : public asNode {
     protected:
+		ageHook::Field<0x0, int> _field0;
 		ageHook::Field<0x18, vehCarSim *> _vehCarSim;
 		ageHook::Field<0x1C, int> _field1C;
 		ageHook::Field<0x20, BOOL> _automatic;
         ageHook::Field<0x24, int> _gear;
 		ageHook::Field<0x28, int> _field28;
+		ageHook::Field<0x2C, int> _gearChangeTime;
+		ageHook::Field<0x30, int> _field30;
+		ageHook::Field<0x34, int> _field34;
+		ageHook::Field<0x50, int> _manualNumGears;
 		ageHook::Field<0x54, int> _autoNumGears;
+		ageHook::Field<0x58, int> _field58;
+		ageHook::Field<0x5C, int> _field5C;
+		ageHook::Field<0x60, int *> _field60;
+		ageHook::Field<0x78, int> _field78;
+		ageHook::Field<0x7C, int> _field7C;
+		ageHook::Field<0x98, int> _field98;
+		ageHook::Field<0x9C, int> _field9C;
+		ageHook::Field<0xB8, int> _fieldB8;
+		ageHook::Field<0xBC, int> _fieldBC;
+		ageHook::Field<0xD8, float> _reverse;
+		ageHook::Field<0xDC, float> _low;
+		ageHook::Field<0xE0, float> _high;
+		ageHook::Field<0xE4, float> _upshiftBias;
+		ageHook::Field<0xE8, float> _downshiftBiasMin;
+		ageHook::Field<0xEC, float> _downshiftBiasMax;
+		ageHook::Field<0xF0, float> _gearBias;
     public:
+		inline void setField0(int field0) {
+			_field0.set(this, field0);
+		}
+		inline void setField30(int field30) {
+			_field30.set(this, field30);
+		}
+		inline void setField58(int field58) {
+			_field58.set(this, field58);
+		}
+		inline void setField78(int field78) {
+			_field78.set(this, field78);
+		}
+		inline void setField98(int field98) {
+			_field98.set(this, field98);
+		}
+		inline void setFieldB8(int fieldB8) {
+			_fieldB8.set(this, fieldB8);
+		}
+		inline void setField34(int field34) {
+			_field34.set(this, field34);
+		}
+		inline void setField5C(int field5C) {
+			_field5C.set(this, field5C);
+		}
+		inline void setField7C(int field7C) {
+			_field7C.set(this, field7C);
+		}
+		inline void setField9C(int field9C) {
+			_field9C.set(this, field9C);
+		}
+		inline void setFieldBC(int fieldBC) {
+			_fieldBC.set(this, fieldBC);
+		}
+		inline int * getField60(void) {
+			return _field60.get(this);
+		}
 		inline vehCarSim * getVehCarSim(void) {
 			return _vehCarSim.get(this);
 		}
@@ -210,11 +267,41 @@ namespace MM2
 		inline void setAutoNumGears(int autoNumGears) {
 			_autoNumGears.set(this, autoNumGears);
 		}
+		inline void setUpshiftBias(float upshiftBias) {
+			_upshiftBias.set(this, upshiftBias);
+		}
+		inline void setDownshiftBiasMin(float downshiftBiasMin) {
+			_downshiftBiasMin.set(this, downshiftBiasMin);
+		}
+		inline void setDownshiftBiasMax(float downshiftBiasMax) {
+			_downshiftBiasMax.set(this, downshiftBiasMax);
+		}
+		inline void setManualNumGears(float manualNumGears) {
+			_manualNumGears.set(this, manualNumGears);
+		}
+		inline void setGearChangeTime(float gearChangeTime) {
+			_gearChangeTime.set(this, gearChangeTime);
+		}
+		inline void setGearBias(float gearBias) {
+			_gearBias.set(this, gearBias);
+		}
+		inline void setReverse(float reverse) {
+			_reverse.set(this, reverse);
+		}
+		inline void setLow(float low) {
+			_low.set(this, low);
+		}
+		inline void setHigh(float high) {
+			_high.set(this, high);
+		}
+		inline int getManualNumGears(void) {
+			return _manualNumGears.get(this);
+		}
 
 		//This is used in GearToRatioMPH, not sure what it stands for
 		const float rationToMPH = 26.82240;
 
-		int field0;
+		//int field0;
 		int field4;
 		int field8;
 		int fieldC;
@@ -225,75 +312,104 @@ namespace MM2
 		/*BOOL _automatic;
 		int _currentGear;*/
 		//int field28;
-		float _gearChangeTime;
-		int field30;
-		int field34;
+		//float _gearChangeTime;
+		//int field30;
+		//int field34;
 		int field38;
 		int field3C;
 		int field40;
 		int field44;
 		int field48;
 		int field4C;
-		int _manualNumGears;
+		//int _manualNumGears;
 		//int _autoNumGears;
-		int field58;
-		int field5C;
-		int field60;
+		//int field58;
+		//int field5C;
+		//int field60;
 		int field64;
 		int field68;
 		int field6C;
 		int field70;
 		int field74;
-		int field78;
-		int field7C;
+		//int field78;
+		//int field7C;
 		int field80;
 		int field84;
 		int field88;
 		int field8C;
 		int field90;
 		int field94;
-		int field98;
-		int field9C;
+		//int field98;
+		//int field9C;
 		int fieldA0;
 		int fieldA4;
 		int fieldA8;
 		int fieldAC;
 		int fieldB0;
 		int fieldB4;
-		int fieldB8;
-		int fieldBC;
+		//int fieldB8;
+		//int fieldBC;
 		int fieldC0;
 		int fieldC4;
 		int fieldC8;
 		int fieldCC;
 		int fieldD0;
 		int fieldD4;
-		float _reverse;
+		/*float _reverse;
 		float _low;
 		float _high;
 		float _upshiftBias;
 		float _downshiftBiasMin;
 		float _downshiftBiasMax;
-		float _gearBias;
+		float _gearBias;*/
 
-		/*vehTransmission() {
-			int v2;
+		vehTransmission() {
+			int v2, v7;
+			int * v3;
+			double v4, v5;
 
 			asNode::asNode();
-			this->field30 = -1054867456;
-			this->field58 = -1054867456;
+			this->setField30(-1054867456);
+			this->setField58(-1054867456);
 			v2 = 2;
-			this->field18 = 0;
-			this->field78 = 0;
-			this->field98 = 0;
-			this->fieldB8 = 0;
-			this->field34 = 0;
-			this->field5C = 0;
-			this->field7C = 0;
-			this->field9C = 0;
-			this->fieldBC = 0;
-			//this->field0 = this->vftable;
-		}*/
+			this->setVehCarSim(0);
+			this->setField78(0);
+			this->setField98(0);
+			this->setFieldB8(0);
+			this->setField34(0);
+			this->setField5C(0);
+			this->setField7C(0);
+			this->setField9C(0);
+			this->setFieldBC(0);
+			v7 = 2;
+			v3 = this->getField60();
+
+			do {
+				v4 = v7;
+				++v2;
+				++v3;
+				v7 = v2;
+				v5 = 30.0 / v4;
+				*(v3 - 11) = v5;
+				*(v3 - 1) = v5;
+				v3[7] = 1169915904;
+				v3[15] = 1157234688;
+				v3[23] = 1157234688;
+			} while (v2 < 8);
+
+			this->setUpshiftBias(1028443341);
+			this->setDownshiftBiasMin(1028443341);
+			this->setManualNumGears(7);
+			this->setAutoNumGears(6);
+			this->setAutomatic(1);
+			this->setGearChangeTime(1061997773);
+			this->setDownshiftBiasMax(1050253722);
+			this->setGearBias(1056964608);
+			this->setReverse(1101004800);
+			this->setLow(1101004800);
+			this->setHigh(1117126656);
+			vehTransmission::Reset();
+		}
 
 		void Reset() {
 			asNode::Reset();
@@ -332,7 +448,7 @@ namespace MM2
 			}
 			else {
 				currentGear = this->getGear();
-				if (currentGear < (this->_manualNumGears) - 1) {
+				if (currentGear < (this->getManualNumGears()) - 1) {
 					this->SetCurrentGear(currentGear + 1);
 				}
 			}
